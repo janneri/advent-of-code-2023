@@ -23,7 +23,7 @@ object AdventOfCodeTemplateUtil {
             val testInput = readInput("${dayPrefix}_test")
             check(part1(testInput) == 1)
             
-            val input = readInput("${dayPrefix}")
+            val input = readInput("$dayPrefix")
             part1(input).println()
             part2(input).println()
         }
