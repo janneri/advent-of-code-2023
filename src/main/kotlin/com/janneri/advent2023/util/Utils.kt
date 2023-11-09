@@ -1,11 +1,13 @@
-import java.io.File
+package com.janneri.advent2023.util
+
 import java.math.BigInteger
+import java.nio.file.Path
 import java.security.MessageDigest
 
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = File("src", "$name.txt")
+fun readInput(name: String) = Path.of("src", "test", "resources", "$name.txt").toFile()
     .readLines()
 
 /**
@@ -21,19 +23,19 @@ fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteA
 fun Any?.println() = println(this)
 
 enum class Direction(val dx: Int, val dy: Int, val symbol: Char) {
-    UP( 0, -1, '^') {
+    UP(0, -1, '^') {
         override fun turnLeft() = LEFT
         override fun turnRight() = RIGHT
     },
-    RIGHT( 1, 0, '>') {
+    RIGHT(1, 0, '>') {
         override fun turnLeft() = UP
         override fun turnRight() = DOWN
     },
-    DOWN( 0, 1, 'v') {
+    DOWN(0, 1, 'v') {
         override fun turnLeft() = RIGHT
         override fun turnRight() = LEFT
     },
-    LEFT( -1, 0, '<') {
+    LEFT(-1, 0, '<') {
         override fun turnLeft() = DOWN
         override fun turnRight() = UP
     };
@@ -44,14 +46,14 @@ enum class Direction(val dx: Int, val dy: Int, val symbol: Char) {
 }
 
 enum class IDirection(val dx: Int, val dy: Int) {
-    NORTH( 0, -1),
-    NORTHEAST( 1, -1),
-    EAST( 1, 0),
-    SOUTHEAST( 1, 1),
-    SOUTH( 0, 1),
-    SOUTHWEST( -1, 1),
-    WEST( -1, 0),
-    NORTHWEST( -1, -1)
+    NORTH(0, -1),
+    NORTHEAST(1, -1),
+    EAST(1, 0),
+    SOUTHEAST(1, 1),
+    SOUTH(0, 1),
+    SOUTHWEST(-1, 1),
+    WEST(-1, 0),
+    NORTHWEST(-1, -1)
 }
 
 data class Coord(val x: Int, val y: Int) {
@@ -59,6 +61,7 @@ data class Coord(val x: Int, val y: Int) {
     fun diagonalNeighbors(): List<Coord> = IDirection.values().map { this.move(it) }
     fun move(direction: IDirection, amount: Int = 1) =
         Coord(x + amount * direction.dx, y + amount * direction.dy)
+
     fun move(direction: Direction, amount: Int = 1) =
         Coord(x + amount * direction.dx, y + amount * direction.dy)
 
@@ -81,8 +84,8 @@ data class Coord(val x: Int, val y: Int) {
 }
 
 fun drawGrid(coords: Set<Coord>, tileSymbolAt: (Coord) -> Char) {
-    val yRange = coords.minBy { it.y }.y .. coords.maxBy { it.y }.y
-    val xRange = coords.minBy { it.x }.x .. coords.maxBy { it.x }.x
+    val yRange = coords.minBy { it.y }.y..coords.maxBy { it.y }.y
+    val xRange = coords.minBy { it.x }.x..coords.maxBy { it.x }.x
 
     for (y in yRange) {
         for (x in xRange) {

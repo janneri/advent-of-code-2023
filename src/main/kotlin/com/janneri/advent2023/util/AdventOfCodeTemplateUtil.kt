@@ -1,3 +1,5 @@
+package com.janneri.advent2023
+
 import java.io.File
 import java.net.CookieHandler
 import java.net.CookieManager
@@ -12,34 +14,61 @@ import java.time.Duration
 
 
 object AdventOfCodeTemplateUtil {
+    private val YEAR = 2020
+
     private fun createDay(dayNum: Int) {
-        val dir = Path.of("src")
+        val dir = Path.of("src", "main", "kotlin", "com", "janneri", "advent$YEAR")
         val dayPrefix = String.format("Day%02d", dayNum)
-        val inputTxtFile = dir.resolve("$dayPrefix.txt").toFile()
-        dir.resolve("${dayPrefix}_test.txt").toFile().createNewFile()
         val mainFile = dir.resolve("${dayPrefix}.kt").toFile()
 
         Files.writeString(mainFile.toPath(), """
-        // See puzzle in https://adventofcode.com/2023/day/$dayNum
+        // See puzzle in https://adventofcode.com/$YEAR/day/$dayNum
+        package com.janneri.advent$YEAR
         
-        fun part1(inputLines: List<String>): Int {
-            return 0
-        }
-        
-        fun part2(inputLines: List<String>): Int {
-            return 0
-        }
-        
-        fun main() {
-            val testInput = readInput("${dayPrefix}_test")
-            check(part1(testInput) == 1)
+        class $dayPrefix(inputLines: List<String>) {
+            fun part1(): Int {
+                return 0
+            }
             
-            val input = readInput("$dayPrefix")
-            part1(input).println()
-            part2(input).println()
+            fun part2(): Int {
+                return 0
+            }
         }
         """.trimIndent())
 
+        val testSrcDir = Path.of("src", "test", "kotlin", "com", "janneri", "advent$YEAR")
+        val mainTestFile = testSrcDir.resolve("${dayPrefix}Test.kt").toFile()
+        Files.writeString(mainTestFile.toPath(), """
+            class Day02Test {
+                @Test
+                fun part1_test() {
+                    val result = Day02(readInput("Day02_test")).part1()
+                    assertEquals(2, result)
+                }
+
+                @Test
+                fun part1_real() {
+                    val result = Day02(readInput("Day02")).part1()
+                    assertEquals(2, result)
+                }
+                
+                @Test
+                fun part2_test() {
+                    val result = Day02(readInput("Day02_test")).part2()
+                    assertEquals(2, result)
+                }
+
+                @Test
+                fun part2_real() {
+                    val result = Day02(readInput("Day02")).part2()
+                    assertEquals(2, result)
+                }
+            }
+        """.trimIndent())
+
+        val testResourcesDir = Path.of("src", "test", "resources")
+        val inputTxtFile = testResourcesDir.resolve("$dayPrefix.txt").toFile()
+        testResourcesDir.resolve("${dayPrefix}_test.txt").toFile().createNewFile()
         Files.writeString(inputTxtFile.toPath(), downloadInput(dayNum))
     }
 
@@ -73,7 +102,7 @@ object AdventOfCodeTemplateUtil {
     private fun downloadInput(dayNum: Int): String? {
         val client = getHttpClient()
         val req = HttpRequest.newBuilder()
-            .uri(URI.create("https://adventofcode.com/2022/day/$dayNum/input"))
+            .uri(URI.create("https://adventofcode.com/$YEAR/day/$dayNum/input"))
             .GET().build()
 
         return client.send(req, HttpResponse.BodyHandlers.ofString()).body().trim()
