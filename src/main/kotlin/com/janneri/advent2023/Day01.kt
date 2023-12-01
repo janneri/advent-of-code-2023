@@ -1,7 +1,7 @@
 // See puzzle in https://adventofcode.com/2023/day/1
 package com.janneri.advent2023
 
-class Day01(val inputLines: List<String>) {
+class Day01(private val inputLines: List<String>) {
     private val digitNames = mapOf(
         1 to "one",
         2 to "two",
@@ -20,7 +20,7 @@ class Day01(val inputLines: List<String>) {
             .sumOf { it.toInt() }
 
     fun part2(): Int {
-        fun collectDigits(str: String): List<Pair<Int, Int>> {
+        fun collectDigits(str: String): List<Int> {
             val result = mutableListOf<Pair<Int, Int>>()
             (1..9).forEach { digit ->
                 val index = str.indexOf(digit.toString())
@@ -32,13 +32,13 @@ class Day01(val inputLines: List<String>) {
                 if (nameIndex != -1) result.add(digit to nameIndex)
                 if (nameIndex != -1 && nameIndex != nameIndexLast) result.add(digit to nameIndexLast)
             }
-            return result.sortedBy { (_, index) -> index }
+            return result.sortedBy { (_, index) -> index }.map { it.first }
         }
 
         return inputLines
             .map {
                 val allDigits = collectDigits(it)
-                allDigits.first().first.toString() + "" + allDigits.last().first.toString()
+                allDigits.first().toString() + "" + allDigits.last().toString()
             }
             .sumOf { it.toInt() }
     }
