@@ -14,7 +14,7 @@ import java.time.Duration
 
 
 object AdventOfCodeTemplateUtil {
-    private val YEAR = 2020
+    private val YEAR = 2023
 
     private fun createDay(dayNum: Int) {
         val dir = Path.of("src", "main", "kotlin", "com", "janneri", "advent$YEAR")
@@ -25,7 +25,7 @@ object AdventOfCodeTemplateUtil {
         // See puzzle in https://adventofcode.com/$YEAR/day/$dayNum
         package com.janneri.advent$YEAR
         
-        class $dayPrefix(inputLines: List<String>) {
+        class $dayPrefix(val inputLines: List<String>) {
             fun part1(): Int {
                 return 0
             }
@@ -39,28 +39,28 @@ object AdventOfCodeTemplateUtil {
         val testSrcDir = Path.of("src", "test", "kotlin", "com", "janneri", "advent$YEAR")
         val mainTestFile = testSrcDir.resolve("${dayPrefix}Test.kt").toFile()
         Files.writeString(mainTestFile.toPath(), """
-            class Day02Test {
+            class Day${dayPrefix}Test {
                 @Test
                 fun part1_test() {
-                    val result = Day02(readInput("Day02_test")).part1()
+                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}_test")).part1()
                     assertEquals(2, result)
                 }
 
                 @Test
                 fun part1_real() {
-                    val result = Day02(readInput("Day02")).part1()
+                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}")).part1()
                     assertEquals(2, result)
                 }
                 
                 @Test
                 fun part2_test() {
-                    val result = Day02(readInput("Day02_test")).part2()
+                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}_test")).part2()
                     assertEquals(2, result)
                 }
 
                 @Test
                 fun part2_real() {
-                    val result = Day02(readInput("Day02")).part2()
+                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}")).part2()
                     assertEquals(2, result)
                 }
             }
@@ -110,6 +110,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(2)
+        createDay(1)
     }
 }
