@@ -39,28 +39,28 @@ object AdventOfCodeTemplateUtil {
         val testSrcDir = Path.of("src", "test", "kotlin", "com", "janneri", "advent$YEAR")
         val mainTestFile = testSrcDir.resolve("${dayPrefix}Test.kt").toFile()
         Files.writeString(mainTestFile.toPath(), """
-            class Day${dayPrefix}Test {
+            class ${dayPrefix}Test {
                 @Test
                 fun part1_test() {
-                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}_test")).part1()
+                    val result = ${dayPrefix}(readInput("${dayPrefix}_test")).part1()
                     assertEquals(2, result)
                 }
 
                 @Test
                 fun part1_real() {
-                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}")).part1()
+                    val result = ${dayPrefix}(readInput("${dayPrefix}")).part1()
                     assertEquals(2, result)
                 }
                 
                 @Test
                 fun part2_test() {
-                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}_test")).part2()
+                    val result = ${dayPrefix}(readInput("${dayPrefix}_test")).part2()
                     assertEquals(2, result)
                 }
 
                 @Test
                 fun part2_real() {
-                    val result = Day${dayPrefix}(readInput("Day${dayPrefix}")).part2()
+                    val result = ${dayPrefix}(readInput("${dayPrefix}")).part2()
                     assertEquals(2, result)
                 }
             }
@@ -110,6 +110,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(1)
+        createDay(2)
     }
 }
