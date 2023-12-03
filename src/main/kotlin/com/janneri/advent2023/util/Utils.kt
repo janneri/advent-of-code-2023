@@ -1,26 +1,11 @@
 package com.janneri.advent2023.util
 
-import java.math.BigInteger
 import java.nio.file.Path
-import java.security.MessageDigest
 
-/**
- * Reads lines from the given input txt file.
- */
 fun readInput(name: String) = Path.of("src", "test", "resources", "$name.txt").toFile()
     .readLines()
 
-/**
- * Converts string to md5 hash.
- */
-fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
-    .toString(16)
-    .padStart(32, '0')
-
-/**
- * The cleaner shorthand for printing output.
- */
-fun Any?.println() = println(this)
+infix fun <E> Set<E>.overlaps(otherSet: Set<E>): Boolean = this.any { otherSet.contains(it) }
 
 enum class Direction(val dx: Int, val dy: Int, val symbol: Char) {
     UP(0, -1, '^') {
@@ -58,7 +43,7 @@ enum class IDirection(val dx: Int, val dy: Int) {
 
 data class Coord(val x: Int, val y: Int) {
     fun neighbors(): List<Coord> = Direction.values().map { this.move(it) }
-    fun diagonalNeighbors(): Set<Coord> = IDirection.values().map { this.move(it) }.toSet()
+    fun neighborsIncludingDiagonal(): Set<Coord> = IDirection.values().map { this.move(it) }.toSet()
     fun move(direction: IDirection, amount: Int = 1) =
         Coord(x + amount * direction.dx, y + amount * direction.dy)
 
