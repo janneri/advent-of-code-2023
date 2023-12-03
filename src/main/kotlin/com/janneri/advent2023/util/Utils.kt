@@ -58,7 +58,7 @@ enum class IDirection(val dx: Int, val dy: Int) {
 
 data class Coord(val x: Int, val y: Int) {
     fun neighbors(): List<Coord> = Direction.values().map { this.move(it) }
-    fun diagonalNeighbors(): List<Coord> = IDirection.values().map { this.move(it) }
+    fun diagonalNeighbors(): Set<Coord> = IDirection.values().map { this.move(it) }.toSet()
     fun move(direction: IDirection, amount: Int = 1) =
         Coord(x + amount * direction.dx, y + amount * direction.dy)
 

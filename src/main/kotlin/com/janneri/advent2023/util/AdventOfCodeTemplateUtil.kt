@@ -39,6 +39,11 @@ object AdventOfCodeTemplateUtil {
         val testSrcDir = Path.of("src", "test", "kotlin", "com", "janneri", "advent$YEAR")
         val mainTestFile = testSrcDir.resolve("${dayPrefix}Test.kt").toFile()
         Files.writeString(mainTestFile.toPath(), """
+            import com.janneri.advent2023.${dayPrefix}
+            import com.janneri.advent2023.util.readInput
+            import org.junit.jupiter.api.Assertions.assertEquals
+            import org.junit.jupiter.api.Test
+            
             class ${dayPrefix}Test {
                 @Test
                 fun part1_test() {
@@ -110,6 +115,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(2)
+        createDay(3)
     }
 }

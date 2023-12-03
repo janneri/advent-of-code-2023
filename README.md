@@ -4,7 +4,7 @@
 |---------------------------------------------------------------|--------------------------------------------------------------------|-----|-----------------------------------------------|
 | [Day 1 - Trebuchet](https://adventofcode.com/2023/day/1)      | [Day 1 solution](src/main/kotlin/com/janneri/advent2023/Day01.kt)  | 45  | Sum of digits                                 |
 | [Day 2 - Cube Conundrum](https://adventofcode.com/2023/day/2) | [Day 2 solution](src/main/kotlin/com/janneri/advent2023/Day02.kt)  | 50  | Sum numbers and check them against game rules |
-| [Day 3 - todo](https://adventofcode.com/2023/day/3)           | [Day 3 solution](src/main/kotlin/com/janneri/advent2023/Day03.kt)  | ?   | todo                                          |
+| [Day 3 - Gear Ratios](https://adventofcode.com/2023/day/3)    | [Day 3 solution](src/main/kotlin/com/janneri/advent2023/Day03.kt)  | 48  | Find adjacent numbers in grid                 |
 | [Day 4 - todo](https://adventofcode.com/2023/day/4)           | [Day 4 solution](src/main/kotlin/com/janneri/advent2023/Day04.kt)  | ?   | todo                                          |
 | [Day 5 - todo](https://adventofcode.com/2023/day/5)           | [Day 5 solution](src/main/kotlin/com/janneri/advent2023/Day05.kt)  | ?   | todo                                          |
 | [Day 6 - todo](https://adventofcode.com/2023/day/6)           | [Day 6 solution](src/main/kotlin/com/janneri/advent2023/Day06.kt)  | ?   | todo                                          |
