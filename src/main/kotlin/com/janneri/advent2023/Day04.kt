@@ -2,7 +2,7 @@
 package com.janneri.advent2023
 
 class Day04(inputLines: List<String>) {
-    data class Card(val cardNum: Int, val winningCount: Int, val yieldNums: IntRange, var newCards: Set<Card>) {
+    data class Card(val cardNum: Int, val winningCount: Int, val newCardNums: IntRange, var newCards: Set<Card>) {
         companion object {
             private fun parseNums(str: String): Set<Int> =
                 str.trim().replace("  ", " ").split(" ").map { it.trim().toInt() }.toSet()
@@ -31,14 +31,17 @@ class Day04(inputLines: List<String>) {
     }
 
     data class Deck(val cards: List<Card>) {
-        val originalCardsByNum: Map<Int, Card> = cards.fold(mutableMapOf()) { acc, card -> acc[card.cardNum] = card; acc}
+        private val originalCardsByNum: Map<Int, Card> =
+            cards.fold(mutableMapOf()) { acc, card -> acc[card.cardNum] = card; acc}
+
         init {
-            cards.forEach { card -> card.newCards = card.yieldNums.map { originalCardsByNum[it]!! }.toSet() }
+            cards.forEach { card -> card.newCards = card.newCardNums.map { originalCardsByNum[it]!! }.toSet() }
         }
 
         val currentCards: Map<Int, MutableList<Card>> =
             cards.fold(mutableMapOf()) { acc, card ->
-                if (acc.containsKey(card.cardNum)) acc[card.cardNum]!!.add(card) else acc[card.cardNum] = mutableListOf(card)
+                acc.putIfAbsent(card.cardNum, mutableListOf())
+                acc[card.cardNum]!!.add(card)
                 acc
             }
 
@@ -47,13 +50,13 @@ class Day04(inputLines: List<String>) {
         var gameOver = false
 
         fun playCard() {
-            val cardsWithCurrentNumber = currentCards[currentCardNum]!!
-            val currentCard = cardsWithCurrentNumber[currentIndex]
-            currentCard.newCards.forEach { newCard -> currentCards[newCard.cardNum]!!.add(newCard) }
+            val currentCard = currentCards[currentCardNum]!![currentIndex]
+
             if (currentCard.newCards.isEmpty() && currentCardNum == cards.size) {
                 gameOver = true
             }
             else {
+                currentCard.newCards.forEach { newCard -> currentCards[newCard.cardNum]!!.add(newCard) }
                 if (currentIndex == currentCards[currentCard.cardNum]!!.lastIndex) {
                     currentIndex = 0
                     currentCardNum += 1
