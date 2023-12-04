@@ -53,7 +53,7 @@ object AdventOfCodeTemplateUtil {
 
                 @Test
                 fun part1_real() {
-                    val result = ${dayPrefix}(readInput("${dayPrefix}")).part1()
+                    val result = ${dayPrefix}(readInput("$dayPrefix")).part1()
                     assertEquals(2, result)
                 }
                 
@@ -65,15 +65,15 @@ object AdventOfCodeTemplateUtil {
 
                 @Test
                 fun part2_real() {
-                    val result = ${dayPrefix}(readInput("${dayPrefix}")).part2()
+                    val result = ${dayPrefix}(readInput("$dayPrefix")).part2()
                     assertEquals(2, result)
                 }
             }
         """.trimIndent())
 
         val testResourcesDir = Path.of("src", "test", "resources")
-        val inputTxtFile = testResourcesDir.resolve("$dayPrefix.txt").toFile()
         testResourcesDir.resolve("${dayPrefix}_test.txt").toFile().createNewFile()
+        val inputTxtFile = testResourcesDir.resolve("$dayPrefix.txt").toFile()
         Files.writeString(inputTxtFile.toPath(), downloadInput(dayNum))
     }
 
@@ -115,6 +115,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(3)
+        createDay(4)
     }
 }
