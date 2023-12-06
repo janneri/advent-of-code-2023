@@ -7,6 +7,14 @@ fun readInput(name: String) = Path.of("src", "test", "resources", "$name.txt").t
 
 infix fun <E> Set<E>.overlaps(otherSet: Set<E>): Boolean = this.any { otherSet.contains(it) }
 
+
+private val numPattern = """[0-9]+""".toRegex()
+fun parseInts(str: String): List<Int> =
+    numPattern.findAll(str).map { it.value.toInt() }.toList()
+
+fun parseUlongs(str: String): List<ULong> =
+    numPattern.findAll(str).map { it.value.toULong() }.toList()
+
 enum class Direction(val dx: Int, val dy: Int, val symbol: Char) {
     UP(0, -1, '^') {
         override fun turnLeft() = LEFT

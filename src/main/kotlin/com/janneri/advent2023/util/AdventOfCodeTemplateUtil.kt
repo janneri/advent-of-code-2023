@@ -115,6 +115,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(4)
+        createDay(6)
     }
 }
