@@ -4,14 +4,16 @@ package com.janneri.advent2023
 class Day04(inputLines: List<String>) {
     data class Card(val cardNum: Int, val winningCount: Int, val newCardNums: IntRange, var newCards: Set<Card>) {
         companion object {
+            private val linePattern = """^Card\s*(\d+):(.+)\|(.+)$""".toRegex()
+            private val numPattern = """[0-9]+""".toRegex()
+
             private fun parseNums(str: String): Set<Int> =
-                str.trim().replace("  ", " ").split(" ").map { it.trim().toInt() }.toSet()
+                numPattern.findAll(str).map { it.value.toInt() }.toList().toSet()
 
             fun of(str: String): Card {
-                val (cardNumStr, numbers) = str.split(":")
-                val (winning, all) = numbers.split("|")
-                val cardNum = cardNumStr.substringAfter(" ").trim().toInt()
-                val winningNums = parseNums(winning).filter { parseNums(all).contains(it) }
+                val (cardNumStr, winStr, allStr) = linePattern.find(str)!!.destructured
+                val cardNum = cardNumStr.toInt()
+                val winningNums = parseNums(winStr).filter { parseNums(allStr).contains(it) }
                 val yieldNums = IntRange(cardNum + 1, cardNum + winningNums.size)
                 return Card(
                     cardNumStr.substringAfter(" ").trim().toInt(),
