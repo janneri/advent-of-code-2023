@@ -16,37 +16,77 @@ class Day05(inputLines: List<String>) {
     private fun parseNums(str: String): List<Long> =
         numPattern.findAll(str).map { it.value.toLong() }.toList()
 
+    data class MatchResult(val matchedRanges: List<LongRange>, val unmatchedRanges: List<LongRange>)
 
     data class GardenMap(val name: String, val seedMap: List<List<Long>>) {
         val destRanges = seedMap.map { LongRange(it[0], it[0] + it[2] - 1) }
         val srcRanges = seedMap.map { LongRange(it[1], it[1] + it[2] - 1) }
+        val mappers = srcRanges.mapIndexed { index, srcRange -> MapperFunction(srcRange, destRanges[index]) }
 
-        fun seedRangeToAllPossibleDestRanges(seedRange: LongRange, srcRange: LongRange, destRange: LongRange): List<LongRange> {
-            if (!seedRange.intersects(srcRange)) return listOf(seedRange)
+        fun seedRangeToAllPossibleDestRanges(seedRange: LongRange, srcRange: LongRange, destRange: LongRange): MatchResult {
+            val matchedRanges: MutableList<LongRange> = mutableListOf()
+            val unmatchedRanges: MutableList<LongRange> = mutableListOf()
 
-            val ranges = mutableListOf<LongRange>()
-            if (seedRange.first < srcRange.first) {
-                ranges.add(LongRange(seedRange.first, srcRange.first - 1))
+            if (!seedRange.intersects(srcRange)) {
+                unmatchedRanges.add(seedRange)
             }
-            if (seedRange.last > srcRange.last) {
-                ranges.add(LongRange(srcRange.last + 1, seedRange.last))
+            else {
+                if (seedRange.first < srcRange.first) {
+                    matchedRanges.add(LongRange(seedRange.first, srcRange.first - 1))
+                }
+                if (seedRange.last > srcRange.last) {
+                    matchedRanges.add(LongRange(srcRange.last + 1, seedRange.last))
+                }
+
+                matchedRanges.add(seedRange.intersectingRange(srcRange).shift(destRange.first - srcRange.first))
             }
 
-            ranges.add(seedRange.intersectingRange(srcRange).shift(destRange.first - srcRange.first))
-            return ranges
+            return MatchResult(matchedRanges, unmatchedRanges)
         }
 
-        fun allPossibleRanges(fromRanges: Set<LongRange>): Set<LongRange> =
-            fromRanges.flatMap { seedRange ->
-                srcRanges.flatMapIndexed { idx, srcRange ->
-                    val foo = seedRangeToAllPossibleDestRanges(seedRange, srcRange, destRanges[idx])
+        fun allPossibleRanges(fromRanges: Set<LongRange>): Set<LongRange> {
+            val resultRanges = mutableSetOf<LongRange>()
+
+            fromRanges.forEach { seedRange ->
+                val unmappedRanges = mutableSetOf<LongRange>()
+                val mappedRanges = mutableSetOf<LongRange>()
+                srcRanges.foldIndexed(fromRanges) { idx, acc, srcRange ->
+                    val resultRanges = seedRangeToAllPossibleDestRanges(seedRange, srcRange, destRanges[idx])
+                    mappedRanges.addAll(resultRanges.matchedRanges)
+                    // only the unmapped values should be given forward to the next mapper function
+
+                    acc
+
+//                    if (!seedRange.intersects(srcRange)) {
+//                        unmappedRanges.add(seedRange)
+//                    }
+//                    else {
+//                        val ranges = seedRangeToAllPossibleDestRanges(seedRange, srcRange, destRanges[idx])
+//                        if (ranges.size == 1) {
+//                            mappedRanges.add(ranges.first())
+//                            println("from $seedRange, src $srcRange to fully mapped $ranges")
+//                        }
+//                        else {
+//                            println("from $seedRange, src $srcRange dest ${destRanges[idx]} to other $ranges")
+//                            unmappedRanges.addAll(ranges)
+//                        }
+//                    }
                     // todo the seedRange hits, it should be removed
                     // 55..67 is fully matched by 50..97
                     // 55..67 is not matched by 98..99
-                    println("from $seedRange, $srcRange, ${destRanges[idx]} to $foo")
-                    foo
+//                    println("from $seedRange, $srcRange, ${destRanges[idx]} to $foo")
+//                    foo
                 }
-            }.toSet()
+                if (mappedRanges.isNotEmpty()) {
+                    resultRanges.addAll(mappedRanges)
+                }
+                else {
+                    resultRanges.addAll(unmappedRanges)
+                }
+                println("from $seedRange, to $resultRanges")
+            }
+            return resultRanges
+        }
 
         fun seedVal(seed: Long): Long {
             var rangeIndex: Int? = null
@@ -63,10 +103,17 @@ class Day05(inputLines: List<String>) {
         }
     }
 
-    private fun parseMap(lines: List<String>): GardenMap =
-        GardenMap(lines.first(), lines.drop(1).map { parseNums(it) })
+    data class MapperFunction(val srcRange: LongRange, val destRange: LongRange) {
+        fun apply(seed: Long) = destRange.first + (seed - srcRange.first)
+        fun contains(seed: Long) = srcRange.contains(seed)
+
+        fun reverse() = MapperFunction(destRange, srcRange)
+    }
 
     private val seeds: Set<Long> = parseNums(inputLines.first().substringAfter(": ")).toSet()
+
+    private fun parseMap(lines: List<String>): GardenMap =
+        GardenMap(lines.first(), lines.drop(1).map { parseNums(it) })
 
     val maps = inputLines.drop(2).joinToString("\n").split("\n\n").map { parseMap(it.split("\n")) }
 
@@ -84,19 +131,20 @@ class Day05(inputLines: List<String>) {
             .sortedBy { it.first }
             .toSet()
 
-        println(seedRanges)
-//        println(maps[0].allPossibleRanges(seedRanges))
+        println("seedRanges $seedRanges")
+        println(maps[0].allPossibleRanges(seedRanges))
 //        println(maps[0].seedRangeToAllPossibleDestRanges(LongRange(55, 67), LongRange(50, 97), LongRange(52, 99)))
 //        println(maps[0].seedRangeToAllPossibleDestRanges(LongRange(79, 92), LongRange(50, 97), LongRange(52, 99)))
 
-        val allRanges = maps.fold(seedRanges) { acc, gardenMap ->
-            println(gardenMap)
-            val newRanges = gardenMap.allPossibleRanges(acc)
-            println(newRanges.sortedBy { it.first })
-            newRanges
-        }
-        println(allRanges.size)
-        return allRanges.map { it.first }.min()
+        return 0
+//        val allRanges = maps.fold(seedRanges) { acc, gardenMap ->
+//            println(gardenMap)
+//            val newRanges = gardenMap.allPossibleRanges(acc)
+//            println(newRanges.sortedBy { it.first })
+//            newRanges
+//        }
+//        println("all ranges size ${allRanges.size}")
+//        return allRanges.map { it.first }.min()
     }
 
     fun part2BruteForce(): Int {
@@ -113,10 +161,33 @@ class Day05(inputLines: List<String>) {
         println("${seedRanges[9]}: ${seedRanges[9].minOfOrNull { seedToLocation(it) }}")
         return 0
     }
+
+    fun part2ReverseTactic(): Long {
+        val seedRanges =
+            seeds.chunked(2).map { LongRange(it[0], it[0] + it[1] - 1) }.sortedBy { it.first }
+
+        val gmap = maps.first()
+        val foo = MapperFunction(gmap.srcRanges.first(), gmap.destRanges.first())
+
+        println(foo.apply(79))
+        println(foo.reverse().apply(31))
+        val smallestSeed = LongRange(1, 100).firstOrNull { seed ->
+            val resultSeed = 1L
+            maps.reversed().fold(seed) { acc, gardenMap ->
+                gardenMap.mappers.reversed().forEach { mapper ->
+                    val reverseMapper = mapper.reverse()
+                    if (reverseMapper.contains(seed)) reverseMapper.apply(seed) else seed
+                }
+                acc
+            }
+            seedRanges.any { it.contains(resultSeed) }
+        }
+        return smallestSeed ?: 0
+    }
 }
 
 fun main() {
-    val result = Day05(readInput("Day05")).part2()
+    val result = Day05(readInput("Day05_test")).part2ReverseTactic()
     println(result)
 }
 
