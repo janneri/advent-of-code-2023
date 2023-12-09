@@ -15,6 +15,10 @@ fun parseInts(str: String): List<Int> =
 fun parseUlongs(str: String): List<ULong> =
     numPattern.findAll(str).map { it.value.toULong() }.toList()
 
+fun parseLongs(str: String): List<Long> =
+    numPattern.findAll(str).map { it.value.toLong() }.toList()
+
+
 enum class Direction(val dx: Int, val dy: Int, val symbol: Char) {
     UP(0, -1, '^') {
         override fun turnLeft() = LEFT
