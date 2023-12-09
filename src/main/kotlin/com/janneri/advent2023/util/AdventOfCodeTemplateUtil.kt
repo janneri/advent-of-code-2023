@@ -77,14 +77,6 @@ object AdventOfCodeTemplateUtil {
         Files.writeString(inputTxtFile.toPath(), downloadInput(dayNum))
     }
 
-    fun equals(expected: Number, actual: Number) {
-        check (expected == actual) { "Expected $expected, but was $actual" }
-    }
-
-    fun equals(expected: String, actual: String) {
-        check (expected == actual) { "Expected $expected, but was $actual" }
-    }
-
     fun debug(str: String, level: Int) {
         println("${"  ".repeat(level)} $str")
     }
@@ -115,6 +107,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(8)
+        createDay(9)
     }
 }
