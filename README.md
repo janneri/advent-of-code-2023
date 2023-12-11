@@ -12,4 +12,5 @@
 | [Day 8 - Haunted Wasteland](https://adventofcode.com/2023/day/8)   | [Day 8 solution](src/main/kotlin/com/janneri/advent2023/Day08.kt)  | 30  | Nodes, path-finding. Math problem (GCD).                                              |
 | [Day 9 - Haunted Wasteland](https://adventofcode.com/2023/day/9)   | [Day 9 solution](src/main/kotlin/com/janneri/advent2023/Day09.kt)  | 26  | Play with number sequences. Very easy.                                                |
 | [Day 10 - Haunted Wasteland](https://adventofcode.com/2023/day/10) | [Day 10 solution](src/main/kotlin/com/janneri/advent2023/Day10.kt) | 113 | Find a loop in grid. Raytrace to find the inside area.                                |
+| [Day 11 - Cosmic Expansion](https://adventofcode.com/2023/day/11)  | [Day 11 solution](src/main/kotlin/com/janneri/advent2023/Day11.kt) | 46  | Calculate distances between tiles in a map.                                           |
 

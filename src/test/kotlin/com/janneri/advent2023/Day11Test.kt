@@ -13,7 +13,7 @@ class Day11Test {
     @Test
     fun part1_test2() {
         val result = Day11(readInput("Day11_test2")).part1()
-        assertEquals(374, result)
+        assertEquals(5, result)
     }
 
     @Test
@@ -24,13 +24,19 @@ class Day11Test {
     
     @Test
     fun part2_test() {
-        val result = Day11(readInput("Day11_test"), 10).part2()
+        val result = Day11(readInput("Day11_test"), 10 - 1).part2()
         assertEquals(1030, result)
     }
 
     @Test
+    fun part2_test2() {
+        val result = Day11(readInput("Day11_test"), 100 - 1).part2()
+        assertEquals(8410, result)
+    }
+
+    @Test
     fun part2_real() {
-        val result = Day11(readInput("Day11")).part2()
-        assertEquals(2, result)
+        val result = Day11(readInput("Day11"), 1000000 - 1).part2()
+        assertEquals(650672493820L, result)
     }
 }
