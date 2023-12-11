@@ -77,7 +77,7 @@ object AdventOfCodeTemplateUtil {
         Files.writeString(inputTxtFile.toPath(), downloadInput(dayNum))
     }
 
-    fun debug(str: String, level: Int) {
+    fun printlnIndented(str: String, level: Int) {
         println("${"  ".repeat(level)} $str")
     }
 
@@ -96,7 +96,7 @@ object AdventOfCodeTemplateUtil {
             .build()
     }
 
-    private fun downloadInput(dayNum: Int): String? {
+    private fun downloadInput(dayNum: Int): String {
         val client = getHttpClient()
         val req = HttpRequest.newBuilder()
             .uri(URI.create("https://adventofcode.com/$YEAR/day/$dayNum/input"))
@@ -107,6 +107,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(9)
+        createDay(10)
     }
 }
