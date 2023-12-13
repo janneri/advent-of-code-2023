@@ -4,13 +4,24 @@ package com.janneri.advent2023
 import com.janneri.advent2023.util.parseInts
 
 
-
 class Day12(val inputLines: List<String>) {
-    data class ConditionRecord(val str: String, val groupSizes: List<Int>) {
+
+    fun List<Int>.repeat(n: Int): List<Int> {
+        val result = mutableListOf<Int>()
+        repeat(n) { result.addAll(this) }
+        return result.toList()
+    }
+
+    data class ConditionRecord(val str: String,
+                               val groupSizes: List<Int>,
+                               val repeatedStr: String,
+                               val repeatedGroupSizes: List<Int>) {
         companion object {
             fun of(str: String): ConditionRecord {
                 val (rStr, gStr) = str.split(" ")
-                return ConditionRecord(rStr, parseInts(gStr))
+                val repeatedStr = "$rStr?".repeat(5).dropLast(1)
+                val repeatedGStr = "$gStr,".repeat(5).dropLast(1)
+                return ConditionRecord(rStr, parseInts(gStr), repeatedStr, parseInts(repeatedGStr))
             }
         }
     }
@@ -37,15 +48,16 @@ class Day12(val inputLines: List<String>) {
         Integer.toBinaryString(this).padStart(len, '0')
 
 
-    fun findPermutations(record: ConditionRecord): Int {
-        val len = record.str.count { it == '?' }
+    fun findPermutations(str: String, groupSizes: List<Int>): Int {
+        val len = str.count { it == '?' }
         val maxBits = "1".repeat(len)
         val maxNum = maxBits.toInt(2)
         var results = mutableListOf<String>()
         val permutations = (0..maxNum).filter { num ->
             val bitStr = num.toBitString(len)
-            val newRec = replaceQuestionMarks(record.str, bitStr)
-            val matches = record.groupSizes == groupSizes(newRec)
+            val newRec = replaceQuestionMarks(str, bitStr)
+            val newGroupSizes = groupSizes(newRec)
+            val matches = groupSizes == newGroupSizes
             if (matches) results.add(newRec)
             matches
         }
@@ -64,10 +76,53 @@ class Day12(val inputLines: List<String>) {
             (char == '#') to currentList
         }.second
 
-    fun part1(): Int = records.sumOf { findPermutations(it) }
+    fun part1(): Int = records.sumOf { findPermutations(it.str, it.groupSizes) }
 
-    fun part2(): Int {
-        val foo = "#.#.### 1,1,3"
-        return 0
+
+
+    fun part2(): ULong {
+        return records.sumOf { solve(it.repeatedStr.toCharArray().toList(), it.repeatedGroupSizes, null) }
+    }
+
+    data class CacheKey(val chars: List<Char>, val remainingSizes: List<Int>, val currentCount: Int?)
+    val cache = mutableMapOf<CacheKey, ULong>()
+
+    fun solve(chars: List<Char>, remainingSizes: List<Int>, currentCount: Int?): ULong {
+//        println("chars: " + chars.joinToString() + "     sizes: " + remainingSizes.joinToString(",") + "     currentCount: " + currentCount)
+        if (chars.isEmpty()) {
+            if (currentCount == null && remainingSizes.isEmpty()) return 1u
+            if (remainingSizes.size == 1 && currentCount == remainingSizes[0]) return 1u
+            return 0u
+        }
+
+        val possibleMore = chars.count { it == '#' || it == '?' }
+
+        // not enough chars left to find enough springs
+        if (currentCount != null && possibleMore + currentCount < remainingSizes.sum()) return 0u
+        if (currentCount == null && possibleMore < remainingSizes.sum()) return 0u
+        // not possible to find more groups
+        if (currentCount != null && remainingSizes.isEmpty()) return 0u
+
+        val cacheKey = CacheKey(chars, remainingSizes, currentCount)
+        if (cache.contains(cacheKey)) return cache.get(cacheKey)!!
+        
+        var possibleCount = (0).toULong()
+
+        // match is not found, because the current spring count does not match the required group size
+        if (chars[0] == '.' && currentCount != null && currentCount != remainingSizes.first()) return 0u
+        // a group is found, lets drop 1 from the remaining groups and reset spring count
+        if (chars[0] == '.' && currentCount != null) possibleCount += solve(chars.drop(1), remainingSizes.drop(1), null)
+        // a group is found (if ? is .) because it matches the expected group size
+        if (chars[0] == '?' && currentCount != null && currentCount == remainingSizes[0]) possibleCount += solve(chars.drop(1), remainingSizes.drop(1), null)
+        // increase the current count
+        if (chars[0] in "?#" && currentCount != null) possibleCount += solve(chars.drop(1), remainingSizes, currentCount + 1)
+        // set current count to 1 (because a new group starts)
+        if (chars[0] in "?#" && currentCount == null) possibleCount += solve(chars.drop(1), remainingSizes, 1)
+        // just skip the char (because it is .)
+        if (chars[0] in "?." && currentCount == null) possibleCount += solve(chars.drop(1), remainingSizes, null)
+
+        cache.put(cacheKey, possibleCount)
+        return possibleCount
     }
 }
+
