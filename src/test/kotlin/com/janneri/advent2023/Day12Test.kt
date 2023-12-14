@@ -1,5 +1,5 @@
+
 import com.janneri.advent2023.Day12
-import com.janneri.advent2023.Day12Foo
 import com.janneri.advent2023.util.readInput
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -18,12 +18,6 @@ class Day12Test {
         val day = Day12(readInput("Day12_test"))
         assertEquals("#.#.###", day.replaceQuestionMarks("???.###", "101"))
         assertEquals(".##...#...###.", day.replaceQuestionMarks(".??..??...?##.", "11011"))
-    }
-
-    @Test
-    fun part1_test_foo() {
-        val day = Day12Foo(readInput("Day12_test"))
-        assertEquals(21, day.part1())
     }
 
     @Test
