@@ -53,7 +53,7 @@ enum class IDirection(val dx: Int, val dy: Int) {
     NORTHWEST(-1, -1)
 }
 
-data class Coord(val x: Int, val y: Int) {
+data class Coord(val x: Int, val y: Int): Comparable<Coord> {
     fun neighbors(): List<Coord> = Direction.values().map { this.move(it) }
     fun neighborsIncludingDiagonal(): Set<Coord> = IDirection.values().map { this.move(it) }.toSet()
     fun move(direction: IDirection, amount: Int = 1) =
@@ -78,6 +78,11 @@ data class Coord(val x: Int, val y: Int) {
     }
 
     override fun toString() = "($x, $y)"
+
+    override fun compareTo(other: Coord) = compareValuesBy(this, other,
+        { it.y },
+        { it.x }
+    )
 }
 
 typealias Path = List<Coord>
