@@ -9,13 +9,13 @@ import java.util.*
 class Day14(val inputLines: List<String>) {
     private val grid = Grid.of(inputLines)
 
-    data class Grid(val tiles: SortedMap<Coord, Char>) {
+    private data class Grid(val tiles: SortedMap<Coord, Char>) {
         private val coords = tiles.keys
         private val height = 1 + coords.maxOfOrNull { it.y }!!
         private fun tileAt(coord: Coord) = tiles[coord] ?: error("coord not found")
         private fun isFloor(coord: Coord) = tiles.contains(coord) && tileAt(coord) == '.'
 
-        fun getState(): String = tiles.values.joinToString()
+        fun getState(): Int = tiles.values.joinToString().hashCode()
 
         fun cycle() = listOf(UP, LEFT, DOWN, RIGHT).forEach { tilt(it) }
 
