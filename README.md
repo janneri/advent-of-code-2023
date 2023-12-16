@@ -16,4 +16,5 @@
 | [Day 12 - Hot Springs](https://adventofcode.com/2023/day/12)              | [Day 12 solution](src/main/kotlin/com/janneri/advent2023/Day12.kt) | 127 | Recursive cached group finding. Dynamic programming.                                  |
 | [Day 13 - Point of Incidence](https://adventofcode.com/2023/day/13)       | [Day 13 solution](src/main/kotlin/com/janneri/advent2023/Day13.kt) | 77  | Grid comparing cols and rows. Finding a mirror/reflection line.                       |
 | [Day 14 - Parabolic Reflector Dish](https://adventofcode.com/2023/day/14) | [Day 14 solution](src/main/kotlin/com/janneri/advent2023/Day14.kt) | 74  | Grid with moving tiles. Detect cycle in part 2.                                       |
+| [Day 15 - Lens Library](https://adventofcode.com/2023/day/15)             | [Day 15 solution](src/main/kotlin/com/janneri/advent2023/Day15.kt) | 46  | Model a hashtable with hash function and buckets/boxes.                               |
 
