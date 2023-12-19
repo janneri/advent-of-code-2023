@@ -20,3 +20,7 @@ tasks {
         useJUnitPlatform()
     }
 }
+
+tasks.named<KotlinCompilationTask<*>>("compileKotlin").configure {
+    compilerOptions.freeCompilerArgs.add("-opt-in=ExperimentalStdlibApi")
+}
