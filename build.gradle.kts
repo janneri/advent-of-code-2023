@@ -1,5 +1,7 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask
+
 plugins {
-    kotlin("jvm") version "1.8.0"
+    kotlin("jvm") version "1.9.21"
 }
 
 repositories {
