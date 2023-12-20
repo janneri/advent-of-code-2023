@@ -116,9 +116,8 @@ data class Coord(val x: Int, val y: Int): Comparable<Coord> {
 
 typealias Path = List<Coord>
 
-infix fun <T> Any.log(n: Int): T {
+infix fun Any.log(n: Int) {
     if (n == 1) println(this)
-    return this as T
 }
 
 fun drawGrid(coords: Set<Coord>, tileSymbolAt: (Coord) -> Char) {
@@ -132,4 +131,25 @@ fun drawGrid(coords: Set<Coord>, tileSymbolAt: (Coord) -> Char) {
         }
         println()
     }
+}
+
+fun findLCMOfListOfNumbers(numbers: List<Long>): Long {
+    var result = numbers[0]
+    for (i in 1 until numbers.size) {
+        result = findLCM(result, numbers[i])
+    }
+    return result
+}
+
+fun findLCM(a: Long, b: Long): Long {
+    val larger = if (a > b) a else b
+    val maxLcm = a * b
+    var lcm = larger
+    while (lcm <= maxLcm) {
+        if (lcm % a == 0L && lcm % b == 0L) {
+            return lcm
+        }
+        lcm += larger
+    }
+    return maxLcm
 }

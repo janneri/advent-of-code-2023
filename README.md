@@ -21,3 +21,4 @@
 | [Day 17 - Clumsy Crucible](https://adventofcode.com/2023/day/17)          | [Day 17 solution](src/main/kotlin/com/janneri/advent2023/Day17.kt) | 129 | Dijkstra with a twist of min and max amount of steps.                                 |
 | [Day 18 - Lavaduct Lagoon](https://adventofcode.com/2023/day/18)          | [Day 18 solution](src/main/kotlin/com/janneri/advent2023/Day18.kt) | 60  | Pick's theorem to calculate area of a polygon.                                        |
 | [Day 19 - Aplenty](https://adventofcode.com/2023/day/19)                  | [Day 19 solution](src/main/kotlin/com/janneri/advent2023/Day19.kt) | 125 | Range fun. Recursive DFS.                                                             |
+| [Day 20 - Pulse Propagation](https://adventofcode.com/2023/day/20)        | [Day 20 solution](src/main/kotlin/com/janneri/advent2023/Day20.kt) | 150 | LCM in part 2. Send pulse to a logic board.                                           |
