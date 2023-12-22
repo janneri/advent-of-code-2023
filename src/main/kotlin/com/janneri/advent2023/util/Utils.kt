@@ -8,6 +8,7 @@ fun readInput(name: String) = Path.of("src", "test", "resources", "$name.txt").t
 
 infix fun <E> Set<E>.overlaps(otherSet: Set<E>): Boolean = this.any { otherSet.contains(it) }
 
+fun sumN(n: Long): Long = n * (n + 1) / 2
 
 private val numPattern = """-?[0-9]+""".toRegex()
 fun parseInts(str: String): List<Int> =
@@ -20,6 +21,10 @@ fun parseLongs(str: String): List<Long> =
     numPattern.findAll(str).map { it.value.toLong() }.toList()
 
 fun IntRange.intersectRange(other: IntRange) = (maxOf(first, other.first)..minOf(last, other.last))
+fun LongRange.overLaps(other: LongRange) = when {
+    this.first <= other.first -> this.last >= other.first
+    else -> this.first <= other.last
+}
 
 enum class Direction(val dx: Int, val dy: Int, val symbol: Char, val letter: Char) {
     UP(0, -1, '^', 'U') {
@@ -58,6 +63,18 @@ enum class IDirection(val dx: Int, val dy: Int) {
     SOUTHWEST(-1, 1),
     WEST(-1, 0),
     NORTHWEST(-1, -1)
+}
+
+data class Coord3d(val x: Long, val y: Long, val z: Long) {
+    fun move(coord3d: Coord3d): Coord3d =
+        Coord3d(x + coord3d.x, y + coord3d.y, z + coord3d.z)
+
+    companion object {
+        val UP: Coord3d = Coord3d(0, 0, 1)
+        val DOWN: Coord3d = Coord3d(0, 0, -1)
+    }
+
+    override fun toString() = "($x, $y, $z)"
 }
 
 data class LongCoord(val x: Long, val y: Long) {
