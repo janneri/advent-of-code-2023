@@ -50,7 +50,10 @@ enum class Direction(val dx: Int, val dy: Int, val symbol: Char, val letter: Cha
 
     companion object {
         fun ofLetter(letter: Char): Direction =
-            values().find { it.letter == letter } ?: error("invalid letter")
+            entries.find { it.letter == letter } ?: error("invalid letter")
+
+        fun ofSymbol(symbol: Char): Direction =
+            entries.find { it.symbol == symbol } ?: error("invalid symbol")
     }
 }
 
