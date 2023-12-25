@@ -21,6 +21,11 @@ fun parseLongs(str: String): List<Long> =
     numPattern.findAll(str).map { it.value.toLong() }.toList()
 
 fun IntRange.intersectRange(other: IntRange) = (maxOf(first, other.first)..minOf(last, other.last))
+
+fun LongRange.intersectRange(other: LongRange) = (maxOf(first, other.first)..minOf(last, other.last))
+
+fun Double.almostEqual(other: Double) = abs(this - other) < 0.0001
+
 fun LongRange.overLaps(other: LongRange) = when {
     this.first <= other.first -> this.last >= other.first
     else -> this.first <= other.last
@@ -83,8 +88,16 @@ data class Coord3d(val x: Long, val y: Long, val z: Long) {
 data class LongCoord(val x: Long, val y: Long) {
     fun distanceTo(c: LongCoord): Long = abs(this.x - c.x) + abs(this.y - c.y)
 
+    fun multiply(times: Long) =
+        LongCoord(x * times, y * times)
+
+    fun move(coord: LongCoord): LongCoord =
+        LongCoord(x + coord.x, y + coord.y)
+
     fun move(direction: Direction, amount: Long = 1) =
         LongCoord(x + amount * direction.dx, y + amount * direction.dy)
+
+    override fun toString() = "($x, $y)"
 }
 
 data class Coord(val x: Int, val y: Int): Comparable<Coord> {
@@ -173,3 +186,10 @@ fun findLCM(a: Long, b: Long): Long {
     }
     return maxLcm
 }
+
+fun <T> List<T>.permutations() =
+    this.dropLast(1).flatMapIndexed { i, item1 ->
+        this.drop(i + 1).map { item2 ->
+            item1 to item2
+        }
+    }

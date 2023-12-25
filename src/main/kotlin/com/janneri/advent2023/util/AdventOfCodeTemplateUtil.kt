@@ -1,4 +1,4 @@
-package com.janneri.advent2023
+package com.janneri.advent2023.util
 
 import java.io.File
 import java.net.CookieHandler
@@ -14,7 +14,7 @@ import java.time.Duration
 
 
 object AdventOfCodeTemplateUtil {
-    private val YEAR = 2023
+    private const val YEAR = 2023
 
     private fun createDay(dayNum: Int) {
         val dir = Path.of("src", "main", "kotlin", "com", "janneri", "advent$YEAR")
@@ -107,6 +107,6 @@ object AdventOfCodeTemplateUtil {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        createDay(23)
+        createDay(24)
     }
 }
