@@ -122,5 +122,4 @@ class Day25(val inputLines: List<String>) {
 
         error("Could not find wires to cut")
     }
-
 }
