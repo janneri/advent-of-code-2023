@@ -5,10 +5,9 @@ import com.janneri.advent2023.util.Coord3d
 import com.janneri.advent2023.util.almostEqual
 import com.janneri.advent2023.util.parseLongs
 import com.janneri.advent2023.util.permutations
-import java.io.IOException
-import java.util.concurrent.TimeUnit
 
 class Day24(val inputLines: List<String>) {
+    private val hailStones = inputLines.map { Hailstone.parse(it) }
 
     data class Hailstone(val pos: Coord3d, val velocity: Coord3d) {
         // Transfer to general form y=ax+c
@@ -32,7 +31,28 @@ class Day24(val inputLines: List<String>) {
             return inArea && isAFutureXPos(x) && other.isAFutureXPos(x)
         }
 
-        private fun intersectionXY(other: Hailstone): Pair<Double, Double> {
+        private fun positionAfter(time: Double) =
+            Triple(pos.x + velocity.x * time,
+                pos.y + velocity.y * time,
+                pos.z + velocity.z * time)
+
+        fun willCollideWith(other: Hailstone): Boolean {
+            // x = 0, v = 2 and otherX = 2, otherV = 1
+            // The netspeed is v - otherV
+            // The initial distance is otherX - x
+            // Example (x=0, v=2), (x=2, v=1) => t = (2-0)/(2-1) = 2
+            // Example (x=0, v=1), (x=2, v=2) => t = (2-0)/(1-2) = -2 (stone cannot catch the other stone)
+            val t = when {
+                velocity.x != other.velocity.x -> (other.pos.x - pos.x).toDouble() / (velocity.x - other.velocity.x)
+                velocity.y != other.velocity.y -> (other.pos.y - pos.y).toDouble() / (velocity.y - other.velocity.y)
+                velocity.z != other.velocity.z -> (other.pos.z - pos.z).toDouble() / (velocity.z - other.velocity.z)
+                else -> return false
+            }
+
+            return if (t < 0) return false else positionAfter(t) == other.positionAfter(t)
+        }
+
+        fun intersectionXY(other: Hailstone): Pair<Double, Double> {
             // y1 = ax + c
             // y2 = bx + d
             // ax + c = bx + d
@@ -55,72 +75,73 @@ class Day24(val inputLines: List<String>) {
         }
     }
 
-    private val hailStones = inputLines.map { Hailstone.parse(it) }
-
     fun part1(testArea: LongRange): Int {
         return hailStones.permutations().count { (h1, h2) ->
             h1.willCollideXY(h2, testArea)
         }
     }
 
-    private fun equationsZ3(): String {
-        val consts = listOf("x", "y", "z", "vx", "vy", "vz").map {
-            "(declare-const $it Real)"
+    private fun findRockVelocities(hailstones: List<Hailstone>, limit: LongRange): List<Coord3d> {
+        val invalidXVelocities = mutableSetOf<LongRange>()
+        val invalidYVelocities = mutableSetOf<LongRange>()
+        val invalidZVelocities = mutableSetOf<LongRange>()
+
+        fun MutableSet<LongRange>.addImpossible(p0: Long, v0: Long, p1: Long, v1: Long) {
+            // p1 can never catch p0, because p0 is moving away faster than p1
+            if (p0 > p1 && v0 > v1) add(v1..v0)
+            // p0 can never catch p1, because p1 is moving away faster than p0
+            if (p1 > p0 && v1 > v0) add(v0..v1)
         }
 
-        val equations = hailStones.take(3).mapIndexed { i, stone ->
-            val t = "t$i"
-            """
-                (declare-const $t Real)
-                (assert (= (+ x (* vx $t)) (+ ${stone.pos.x} (* $t ${stone.velocity.x}))))
-                (assert (= (+ y (* vy $t)) (+ ${stone.pos.y} (* $t ${stone.velocity.y}))))
-                (assert (= (+ z (* vz $t)) (+ ${stone.pos.z} (* $t ${stone.velocity.z}))))
-            """.trimIndent()
+        hailstones.permutations().forEach { (h1, h2) ->
+            invalidXVelocities.addImpossible(h1.pos.x, h1.velocity.x, h2.pos.x, h2.velocity.x)
+            invalidYVelocities.addImpossible(h1.pos.y, h1.velocity.y, h2.pos.y, h2.velocity.y)
+            invalidZVelocities.addImpossible(h1.pos.z, h1.velocity.z, h2.pos.z, h2.velocity.z)
         }
 
-        return """
-                ${consts.joinToString("\n")}
-                ${equations.joinToString("\n")}
-                 
-                (check-sat)
-                (get-model)
-            """.trimIndent()
+        val possibleRockX = limit.filter { x -> invalidXVelocities.none { x in it } }
+        val possibleRockY = limit.filter { y -> invalidYVelocities.none { y in it } }
+        val possibleRockZ = limit.filter { z -> invalidZVelocities.none { z in it } }
+
+        return buildList {
+            for (x in possibleRockX) {
+                for (y in possibleRockY) {
+                    for (z in possibleRockZ) {
+                        add(Coord3d(x, y, z))
+                    }
+                }
+            }
+        }
+    }
+
+    private fun findRockPosition(h1: Hailstone, h2: Hailstone, rockVelocity: Coord3d): Hailstone? {
+        // When we substract the rock velocity from hailstone velocities,
+        // the rock becomes stationary, and the hailstones intersect at rock position
+        val hv1 = h1.copy(velocity = h1.velocity.minus(rockVelocity))
+        val hv2 = h2.copy(velocity = h2.velocity.minus(rockVelocity))
+
+        val (x, y) = hv1.intersectionXY(hv2)
+        // newX = x + time * velocityX
+        // time = (newX - x) / velocityX
+        val time = (x - hv1.pos.x) / hv1.velocity.x
+
+        if (time < 0) return null
+
+        return Hailstone(
+            Coord3d(x.toLong(), y.toLong(), h1.pos.z + (hv1.velocity.z * time).toLong()),
+            rockVelocity
+        )
     }
 
     fun part2(): Long {
-        // Too lazy, so I just solved it with z3.
-        println(exec("z3 -in", stdIn = equationsZ3())!!)
+        val (h1, h2) = hailStones
+        val limit = if (hailStones.size > 5) LongRange(-250, 250) else LongRange(-5, 5)
 
-        return if (hailStones.size > 5) {
-            419848807765291L + 391746659362922L + 213424530058607L
-        }
-        else {
-            24 + 13 + 10
-        }
+        return findRockVelocities(hailStones, limit)
+            .also { println(it) }
+            .mapNotNull { velocity -> findRockPosition(h1, h2, velocity) }
+            .first { rock -> hailStones.all { it.willCollideWith(rock) } }
+            .let { it.pos.x + it.pos.y + it.pos.z }
     }
 
-    /** Execute any program */
-    private fun exec(cmd: String, stdIn: String = "", captureOutput:Boolean = true): String? {
-        try {
-            val process = ProcessBuilder(*cmd.split("\\s".toRegex()).toTypedArray())
-                .redirectOutput(if (captureOutput) ProcessBuilder.Redirect.PIPE else ProcessBuilder.Redirect.INHERIT)
-                .redirectError(if (captureOutput) ProcessBuilder.Redirect.PIPE else ProcessBuilder.Redirect.INHERIT)
-                .start().apply {
-                    if (stdIn != "") {
-                        outputStream.bufferedWriter().apply {
-                            write(stdIn)
-                            flush()
-                            close()
-                        }
-                    }
-                    waitFor(60, TimeUnit.SECONDS)
-                }
-            if (captureOutput) {
-                return process.inputStream.bufferedReader().readText()
-            }
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
-    }
 }

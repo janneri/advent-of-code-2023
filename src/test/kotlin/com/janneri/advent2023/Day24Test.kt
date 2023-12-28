@@ -13,7 +13,7 @@ class Day24Test {
     @Test
     fun part1_real() {
         val result = Day24(readInput("Day24")).part1(LongRange(200000000000000L, 400000000000000L))
-        assertEquals(2, result)
+        assertEquals(17244, result)
     }
     
     @Test
